@@ -39,6 +39,7 @@ def form_view(request: WSGIRequest):
                 selected_activities = [line.strip() for line in f.readlines()]
         else:
             selected_activities = []
+        print(selected_activities)
         return render(
             request, 'form_template.html', {
                 'activities': activities,
@@ -49,7 +50,6 @@ def form_view(request: WSGIRequest):
         )
     elif request.method == 'POST':
         # Process form data and update files or interact with Discord bot
-        print(f'POST data: {request.POST}')
         token = bytes.fromhex(request.POST.get('token'))
         iv = bytes.fromhex(request.POST.get('iv'))
         user = decrypt(token, iv)
