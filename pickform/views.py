@@ -18,6 +18,7 @@ def form_view(request: WSGIRequest):
     if request.method == 'GET':
         token = unquote(request.GET.get('token'))
         iv = unquote(request.GET.get('iv'))
+        print(iv)
         user = decrypt(token, iv)
         if not user:
             return HttpResponse("Error: Invalid or expired token.", status=401)
