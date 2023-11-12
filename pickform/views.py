@@ -20,6 +20,7 @@ def form_view(request: WSGIRequest):
     if request.method == 'GET':
         print(f'{request.GET=}')
         print(f'{request.GET.get("token")=}')
+        print(f'{request.META=}')
         print(f'{smart_str(request.GET.get("token"), encoding="ascii")=}')
         print(f'{unquote(request.GET.get("token"))=}')
         print(f'{b64decode(unquote(request.GET.get("token")))=}')
