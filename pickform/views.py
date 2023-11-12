@@ -1,14 +1,13 @@
-import csv
 import os
 from pathlib import Path
 from urllib.parse import unquote
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.shortcuts import render
 from django.http import HttpResponse
+from django.shortcuts import render
 from dotenv import load_dotenv
 
-from pickform.auth import extract_from_mac, decrypt
+from pickform.auth import decrypt
 
 load_dotenv(Path(__file__).parent.parent / '.env')
 
