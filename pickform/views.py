@@ -1,4 +1,5 @@
 import os
+from base64 import b64decode
 from pathlib import Path
 from urllib.parse import unquote
 
@@ -16,8 +17,8 @@ ACTIVITIES_FOLDER = os.getenv('ACTIVITIES_FOLDER')
 
 def form_view(request: WSGIRequest):
     if request.method == 'GET':
-        token = unquote(request.GET.get('token')).encode()
-        iv = unquote(request.GET.get('iv')).encode()
+        token = b64decode(unquote(request.GET.get('token')))
+        iv = b64decode(unquote(request.GET.get('iv')))
         print(iv)
         user = decrypt(token, iv)
         if not user:
