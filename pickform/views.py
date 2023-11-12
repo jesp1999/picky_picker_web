@@ -16,8 +16,8 @@ ACTIVITIES_FOLDER = os.getenv('ACTIVITIES_FOLDER')
 
 def form_view(request: WSGIRequest):
     if request.method == 'GET':
-        token = unquote(request.GET.get('token'))
-        iv = unquote(request.GET.get('iv'))
+        token = unquote(request.GET.get('token')).encode()
+        iv = unquote(request.GET.get('iv')).encode()
         print(iv)
         user = decrypt(token, iv)
         if not user:
