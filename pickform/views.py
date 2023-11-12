@@ -22,14 +22,8 @@ def form_view(request: WSGIRequest):
     if request.method == 'GET':
         query_string = request.META['QUERY_STRING']
         params = get_params_from_query_string(query_string)
-        print(f'{params=}')
-        print(f'{params.get("token")=}')
-        print(f'{bytes.fromhex(params.get("token"))=}')
         token = bytes.fromhex(params.get('token'))
         iv = bytes.fromhex(params.get('iv'))
-        print(f'{token=}')
-        print(f'{iv=}')
-        print(iv)
         user = decrypt(token, iv)
         if not user:
             return HttpResponse("Error: Invalid or expired token.", status=401)
@@ -45,6 +39,7 @@ def form_view(request: WSGIRequest):
         )
     elif request.method == 'POST':
         # Process form data and update files or interact with Discord bot
+        print(f'POST data: {request.POST}')
         token = bytes.fromhex(request.POST.get('token'))
         iv = bytes.fromhex(request.POST.get('iv'))
         user = decrypt(token, iv)
