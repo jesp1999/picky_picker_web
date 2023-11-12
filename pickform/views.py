@@ -24,13 +24,16 @@ def form_view(request: WSGIRequest):
 
         with open(f'{ACTIVITIES_FOLDER}/games.csv', 'r') as f:
             activities = [line.partition(',')[0] for line in f.readlines()]
-        return render(
-            request, 'form_template.html', {
-                'activities': activities,
-                'token': token,
-                'iv': iv,
-            }
-        )
+        try:
+            return render(
+                request, 'form_template.html', {
+                    'activities': activities,
+                    'token': token,
+                    'iv': iv,
+                }
+            )
+        except Exception:
+            return HttpResponse("Error: Invalid request.", status=400)
     elif request.method == 'POST':
         # Process form data and update files or interact with Discord bot
         token = unquote(request.POST.get('token'))
