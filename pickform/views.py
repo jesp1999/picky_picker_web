@@ -6,6 +6,7 @@ from urllib.parse import unquote
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils.encoding import smart_str
 from dotenv import load_dotenv
 
 from pickform.auth import decrypt
@@ -19,6 +20,7 @@ def form_view(request: WSGIRequest):
     if request.method == 'GET':
         print(f'{request.GET=}')
         print(f'{request.GET.get("token")=}')
+        print(f'{smart_str(request.GET.get("token"), encoding="ascii")=}')
         print(f'{unquote(request.GET.get("token"))=}')
         print(f'{b64decode(unquote(request.GET.get("token")))=}')
         token = b64decode(unquote(request.GET.get('token')))
