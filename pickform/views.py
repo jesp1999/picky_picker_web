@@ -16,16 +16,19 @@ load_dotenv(Path(__file__).parent.parent / '.env')
 ACTIVITIES_FOLDER = os.getenv('ACTIVITIES_FOLDER')
 
 
+def get_params_from_query_string(query_string: str) -> dict[str, str]:
+    return {s.split('=')[0]: s.split('=')[1] for s in query_string.split('&')}
+
+
 def form_view(request: WSGIRequest):
     if request.method == 'GET':
-        print(f'{request.GET=}')
-        print(f'{request.GET.get("token")=}')
-        print(f'{request.META["QUERY_STRING"]=}')
-        print(f'{smart_str(request.GET.get("token"), encoding="ascii")=}')
-        print(f'{unquote(request.GET.get("token"))=}')
-        print(f'{b64decode(unquote(request.GET.get("token")))=}')
-        token = b64decode(unquote(request.GET.get('token')))
-        iv = b64decode(unquote(request.GET.get('iv')))
+        query_string = request.META['QUERY_STRING']
+        params = get_params_from_query_string(query_string)
+        print(f'{params=}')
+        token = b64decode(unquote(params.get('token')))
+        iv = b64decode(unquote(params.get('iv')))
+        print(f'{token=}')
+        print(f'{iv=}')
         print(iv)
         user = decrypt(token, iv)
         if not user:
