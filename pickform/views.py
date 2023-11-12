@@ -25,6 +25,9 @@ def form_view(request: WSGIRequest):
         query_string = request.META['QUERY_STRING']
         params = get_params_from_query_string(query_string)
         print(f'{params=}')
+        print(f'{params.get("token")=}')
+        print(f'{unquote(params.get("token"))=}')
+        print(f'{b64decode(unquote(params.get("token")))=}')
         token = b64decode(unquote(params.get('token')))
         iv = b64decode(unquote(params.get('iv')))
         print(f'{token=}')
