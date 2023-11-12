@@ -33,13 +33,12 @@ def form_view(request: WSGIRequest):
         return render(
             request, 'form_template.html', {
                 'activities': activities,
-                'token': token,
-                'iv': iv,
+                'token': params.get('token'),
+                'iv': params.get('iv'),
             }
         )
     elif request.method == 'POST':
         # Process form data and update files or interact with Discord bot
-        print(f'POST data: {request.POST}')
         token = bytes.fromhex(request.POST.get('token'))
         iv = bytes.fromhex(request.POST.get('iv'))
         user = decrypt(token, iv)
