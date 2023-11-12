@@ -1,12 +1,10 @@
 import os
-from base64 import b64decode
 from pathlib import Path
 from urllib.parse import unquote
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.utils.encoding import smart_str
 from dotenv import load_dotenv
 
 from pickform.auth import decrypt
@@ -26,10 +24,9 @@ def form_view(request: WSGIRequest):
         params = get_params_from_query_string(query_string)
         print(f'{params=}')
         print(f'{params.get("token")=}')
-        print(f'{unquote(params.get("token"), encoding="ascii")=}')
-        print(f'{b64decode(unquote(params.get("token"), encoding="ascii"))=}')
-        token = b64decode(unquote(params.get('token'), encoding="ascii"))
-        iv = b64decode(unquote(params.get('iv'), encoding="ascii"))
+        print(f'{bytes.fromhex(params.get("token"))=}')
+        token = bytes.fromhex(params.get('token'))
+        iv = bytes.fromhex(params.get('iv'))
         print(f'{token=}')
         print(f'{iv=}')
         print(iv)
