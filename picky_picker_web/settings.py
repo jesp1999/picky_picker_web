@@ -54,7 +54,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'picky_picker_form.urls'
+ROOT_URLCONF = 'picky_picker_web.urls'
 
 TEMPLATES = [
     {
