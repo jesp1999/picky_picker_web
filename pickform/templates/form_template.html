@@ -1,0 +1,18 @@
+<html lang="en">
+<body>
+    <form method="post" action="">
+        {% csrf_token %}
+
+        <input type="hidden" id="token" name="token" value="{{ token }}" readonly>
+        <input type="hidden" id="iv" name="iv" value="{{ iv }}" readonly>
+
+        {% for activity in activities %}
+            <label>
+                <input type="checkbox" name="activities" value="{{ activity }}"> {{ activity }}
+            </label><br>
+        {% endfor %}
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
