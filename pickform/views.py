@@ -22,8 +22,12 @@ def form_view(request: WSGIRequest):
     if request.method == 'GET':
         query_string = request.META['QUERY_STRING']
         params = get_params_from_query_string(query_string)
-        token = bytes.fromhex(params.get('token'))
-        iv = bytes.fromhex(params.get('iv'))
+        token_hex = params.get('token')
+        print(f'token hex: {token_hex}')
+        print(f'token hex type: {type(token_hex)}')
+        token = bytes.fromhex(token_hex)
+        iv_hex = params.get('iv')
+        iv = bytes.fromhex(iv_hex)
         user = decrypt(token, iv)
         if not user:
             return HttpResponse("Error: Invalid or expired token.", status=401)
@@ -33,8 +37,8 @@ def form_view(request: WSGIRequest):
         return render(
             request, 'form_template.html', {
                 'activities': activities,
-                'token': params.get('token'),
-                'iv': params.get('iv'),
+                'token': token_hex,
+                'iv': iv_hex,
             }
         )
     elif request.method == 'POST':
