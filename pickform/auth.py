@@ -35,6 +35,7 @@ def decrypt(ciphertext: bytes, iv: bytes) -> Optional[str]:
         ciphertext
     ) + decryptor.finalize()
     decoded_data = decrypted_data.decode()
+    print(decoded_data)
     username, timestamp = decoded_data.split(':')
     timestamp = datetime.fromisoformat(timestamp)
     if datetime.utcnow() < timestamp + timedelta(seconds=300):
