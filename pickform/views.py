@@ -45,8 +45,8 @@ def form_view(request: WSGIRequest):
         )
     elif request.method == 'POST':
         # Process form data and update files or interact with Discord bot
-        token = unquote(request.POST.get('token'))
-        iv = unquote(request.POST.get('iv'))
+        token = bytes.fromhex(request.POST.get('token'))
+        iv = bytes.fromhex(request.POST.get('iv'))
         user = decrypt(token, iv)
         if not user:
             return HttpResponse("Error: Invalid or expired token.", status=401)
