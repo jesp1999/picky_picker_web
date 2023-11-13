@@ -23,8 +23,6 @@ def form_view(request: WSGIRequest):
         query_string = request.META['QUERY_STRING']
         params = get_params_from_query_string(query_string)
         token_hex = params.get('token')
-        print(f'token hex: {token_hex}')
-        print(f'token hex type: {type(token_hex)}')
         token = bytes.fromhex(token_hex)
         iv_hex = params.get('iv')
         iv = bytes.fromhex(iv_hex)
@@ -39,7 +37,6 @@ def form_view(request: WSGIRequest):
                 selected_activities = [line.strip() for line in f.readlines()]
         else:
             selected_activities = []
-        print(selected_activities)
         return render(
             request, 'form_template.html', {
                 'activities': activities,
