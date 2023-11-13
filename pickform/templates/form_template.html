@@ -8,7 +8,7 @@
 
         {% for activity in activities %}
             <label>
-                <input type="checkbox" name="activities" value="{{ activity }}" {% if label in selected_activities %}checked{% endif %}> {{ activity }}
+                <input type="checkbox" name="activities" value="{{ activity }}" checked={% if label in selected_activities %} "checked"> {% else %} "false"> {% endif %} {{ activity }}
             </label><br>
         {% endfor %}
 
