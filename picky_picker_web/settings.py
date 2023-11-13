@@ -30,7 +30,9 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = bool(os.getenv('DEBUG', 'False'))
 
 ALLOWED_HOSTS = [
-    '34.224.84.249'
+    '34.224.84.249',
+    'ec2-34-224-84-249.compute-1.amazonaws.com',
+    'pickypicker.julianespada.com',
 ]
 
 
