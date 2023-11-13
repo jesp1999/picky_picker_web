@@ -33,7 +33,7 @@ def form_view(request: WSGIRequest):
             return HttpResponse("Error: Invalid or expired token.", status=401)
 
         with open(f'{ACTIVITIES_FOLDER}/games.csv', 'r') as f:
-            activities = [line.partition(',')[0] for line in f.readlines()]
+            activities = [line.partition(',')[0].strip() for line in f.readlines()]
         if os.path.exists(f'{ACTIVITIES_FOLDER}/players/{user}.csv'):
             with open(f'{ACTIVITIES_FOLDER}/players/{user}.csv', 'r') as f:
                 selected_activities = [line.strip() for line in f.readlines()]
