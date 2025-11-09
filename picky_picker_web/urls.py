@@ -1,11 +1,13 @@
 from django.urls import path
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 
 from pickform.views import auth_view, discord_redirect_view, form_view
 
 DCV_FILENAME = '1C50148033C120998D2A58356A948C73.txt'
 
 urlpatterns = [
+    path('favicon.ico', RedirectView.as_view(url='/static/images/favicon.ico', permanent=False)),
     path('auth/', auth_view, name='form-view'),
     path('auth/discord/redirect/', discord_redirect_view, name='form-view'),
     path('form/', form_view, name='form-view'),
