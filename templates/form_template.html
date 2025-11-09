@@ -1,18 +1,28 @@
+{% load static %}
+<!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Picky Picker</title>
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="shortcut icon" type="image/png" href="{% static 'images/favicon.ico' %}" >
+</head>
 <body>
-    <form method="post" action="">
-        {% csrf_token %}
+    <div class="mb-3">
+        <form method="post" action="">
+            {% csrf_token %}
 
-        <input type="hidden" id="token" name="token" value="{{ token }}" readonly>
-        <input type="hidden" id="iv" name="iv" value="{{ iv }}" readonly>
+            {% for activity in activities %}
+                <label class="form-label">
+                    <input type="checkbox" class="form-check-input" name="activities" value="{{ activity }}" {% if activity in selected_activities %} checked {% endif %} > {{ activity }}
+                </label><br>
+            {% endfor %}
 
-        {% for activity in activities %}
-            <label>
-                <input type="checkbox" name="activities" value="{{ activity }}" {% if activity in selected_activities %} checked {% endif %} > {{ activity }}
-            </label><br>
-        {% endfor %}
-
-        <input type="submit" value="Submit">
-    </form>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
 </body>
 </html>
