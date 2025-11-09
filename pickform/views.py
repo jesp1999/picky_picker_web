@@ -5,6 +5,9 @@ from typing import Optional
 from urllib.parse import quote, unquote, urlparse
 
 import requests
+import base64
+import hashlib
+import secrets
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
@@ -86,10 +89,16 @@ def auth_view(request: WSGIRequest):
     next_path = request.GET.get("next") or request.get_full_path()
     state = quote(next_path, safe="")
 
+    code_verifier = secrets.token_urlsafe(64)
+    code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).rstrip(b"=")
+    request.session['discord_pkce_code_verifier'] = code_verifier
+
+
     redirect_uri = quote(REDIRECT_URI, safe="")
     authorize_url = (
         f"https://discord.com/oauth2/authorize?client_id={CLIENT_ID}"
         f"&response_type=code&redirect_uri={redirect_uri}&scope=identify&state={state}"
+        f"&code_challenge={code_challenge}&code_challenge_method=S256"
     )
     return redirect(authorize_url)
 
@@ -105,6 +114,10 @@ def discord_redirect_view(request: WSGIRequest):
         "code": code,
         "redirect_uri": REDIRECT_URI,
     }
+    # Include PKCE code_verifier if present in session
+    code_verifier = request.session.pop('discord_pkce_code_verifier', None)
+    if code_verifier:
+        data["code_verifier"] = code_verifier
 
     resp = requests.post(
         TOKEN_URL,
