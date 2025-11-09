@@ -90,9 +90,7 @@ def auth_view(request: WSGIRequest):
     state = quote(next_path, safe="")
 
     code_verifier = secrets.token_urlsafe(64)
-    code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).rstrip(b"=")
-    request.session['discord_pkce_code_verifier'] = code_verifier
-
+    code_challenge = base64.urlsafe_b64encode(hashlib.sha256(code_verifier.encode()).digest()).rstrip(b"=").decode()
 
     redirect_uri = quote(REDIRECT_URI, safe="")
     authorize_url = (
@@ -100,22 +98,31 @@ def auth_view(request: WSGIRequest):
         f"&response_type=code&redirect_uri={redirect_uri}&scope=identify&state={state}"
         f"&code_challenge={code_challenge}&code_challenge_method=S256"
     )
-    return redirect(authorize_url)
+
+    response = redirect(authorize_url)
+    response.set_cookie(
+        'pkce_verifier',
+        code_verifier,
+        max_age=60,
+        httponly=True,
+        secure=COOKIE_SECURE,
+        samesite='Lax',
+    )
+    return response
 
 
 @require_http_methods(["GET"])
 def discord_redirect_view(request: WSGIRequest):
     code = request.GET.get("code")
     if not code:
-        return HttpResponse("Missing code parameter", status=400)
+        return HttpResponse("Missing code parameter in redirect from Discord", status=400)
 
     data = {
         "grant_type": "authorization_code",
         "code": code,
         "redirect_uri": REDIRECT_URI,
     }
-    # Include PKCE code_verifier if present in session
-    code_verifier = request.session.pop('discord_pkce_code_verifier', None)
+    code_verifier = request.COOKIES.get('pkce_verifier')
     if code_verifier:
         data["code_verifier"] = code_verifier
 
@@ -149,8 +156,10 @@ def discord_redirect_view(request: WSGIRequest):
     else:
         redirect_target = "/form"
 
+    # Clear the PKCE cookie after use
     response = redirect(redirect_target)
     _set_token_cookies(response, access_token, refresh_token, expires_in)
+    response.set_cookie('pkce_verifier', '', max_age=0)
     return response
 
 
