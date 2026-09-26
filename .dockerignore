@@ -1,0 +1,16 @@
+*.bak*
+*.bck
+*.env
+*.env.example
+*.log
+*.md
+*.pyc
+*.sqlite3
+.git
+.gitignore
+.idea
+LICENSE
+__pycache__/
+data/
+docker-compose.yml
+staticfiles/

@@ -1,0 +1,75 @@
+name: picky-picker
+networks:
+  proxy-net:
+    name: proxy-net
+    external: true
+  public-net:
+    name: public-net
+    external: true
+services:
+  picky-picker:
+    image: picky-picker:local
+    # §1.5 deviation: container_name/hostname stay picky-picker-web (not
+    # picky-picker) — NPM / Cloudflare Tunnel upstreams may address it by name.
+    # Rename separately once those are checked.
+    container_name: picky-picker-web
+    hostname: picky-picker-web
+    # Matches the Dockerfile's USER appuser (1000:1000); explicit for auditability.
+    user: "1000:1000"
+    security_opt:
+      - "no-new-privileges:true"
+    # Writes go only to /opt/db (bind) and /tmp (gunicorn worker heartbeat files).
+    read_only: true
+    # §2.4 deviation: full-project repo layout, so the build context is the repo
+    # root rather than a dedicated build/ dir. .dockerignore excludes data/,
+    # *.env and *.sqlite3 so runtime state never enters the context.
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Non-root with no root-time setup in entrypoint -> drop-all is safe (§8.2.1).
+    cap_drop:
+      - ALL
+    env_file:
+      - picky-picker.env
+    environment:
+      DB_PATH: /opt/db/db.sqlite3
+      ACTIVITIES_FOLDER: /opt/data/resources
+      ALLOWED_HOSTS: 'heckbot.julianespada.com'
+      CSRF_TRUSTED_ORIGINS: 'https://heckbot.julianespada.com'
+      REDIRECT_URI: https://heckbot.julianespada.com/auth/discord/redirect/
+      TZ: America/New_York
+      DEBUG: "False"
+    volumes:
+      # Cross-project mount: activity resources are owned by heckbot's data dir.
+      - type: bind
+        source: /opt/appdata/heckbot/data
+        target: /opt/data
+      - type: bind
+        source: /opt/appdata/picky-picker/data
+        target: /opt/db
+    tmpfs:
+      - /tmp
+    ports:
+      - target: 80
+        published: "6847"
+        protocol: tcp
+    networks:
+      proxy-net:
+        ipv4_address: 10.10.1.29
+      public-net:
+        ipv4_address: 10.10.2.17
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - import urllib.request; urllib.request.urlopen("http://127.0.0.1:80/static/admin/css/base.css", timeout=5)
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "268435456" # 256MiB
