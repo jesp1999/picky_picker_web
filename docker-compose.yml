@@ -49,6 +49,8 @@ services:
         target: /opt/db
     tmpfs:
       - /tmp
+      # gunicorn 26+ control server writes $HOME/.gunicorn
+      - /home/appuser
     ports:
       - target: 80
         published: "6847"
