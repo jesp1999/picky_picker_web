@@ -9,11 +9,8 @@ networks:
 services:
   picky-picker:
     image: picky-picker:local
-    # §1.5 deviation: container_name/hostname stay picky-picker-web (not
-    # picky-picker) — NPM / Cloudflare Tunnel upstreams may address it by name.
-    # Rename separately once those are checked.
-    container_name: picky-picker-web
-    hostname: picky-picker-web
+    container_name: picky-picker
+    hostname: picky-picker
     # Matches the Dockerfile's USER appuser (1000:1000); explicit for auditability.
     user: "1000:1000"
     security_opt:
